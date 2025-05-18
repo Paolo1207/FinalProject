@@ -2,7 +2,7 @@ import logging
 from flask import Blueprint, render_template, request
 from sqlalchemy import func, extract
 from app.models import Inventory, Sales
-from app import db
+from app import db, cache  # import cache
 from app.arima_forecast import arima_forecast
 from app.linear_regression import linear_regression_forecast
 from app.ets_model import ets_forecast
@@ -13,6 +13,7 @@ main = Blueprint('main', __name__)
 
 @main.route('/dashboard')
 def dashboard():
+    
     # Get timeframe filter from query params: monthly (default), quarterly, yearly
     timeframe = request.args.get('timeframe', 'monthly').lower()
     if timeframe == 'monthly':
@@ -137,52 +138,78 @@ def dashboard():
 
     forecast_steps = 4  # Number of future points to forecast
 
-    # Initialize all metric variables to None in case of failures or no data
-    arima_mae = arima_rmse = lr_mae = lr_rmse = lr_mape = lr_r2 = ets_mae = ets_rmse = None
+    # Create a unique cache key based on filter parameters and timeframe
+    cache_key = f"forecast_{selected_region}_{selected_item}_{timeframe}"
 
-    if sales_data:
-        try:
-            df = pd.DataFrame(sales_data, columns=['date', 'sales_amount'])
-            df['date'] = pd.to_datetime(df['date'])
-            df.set_index('date', inplace=True)
-            df = df.asfreq('D', fill_value=0)
-            series = pd.Series(df['sales_amount'].values, index=df.index)
+    # Try to get cached forecast results
+    forecast_results = cache.get(cache_key)
 
-            # Forecast with ARIMA
+    if forecast_results is None:
+        # If not cached, perform forecasting (heavy computation)
+        arima_mae = arima_rmse = lr_mae = lr_rmse = lr_mape = lr_r2 = ets_mae = ets_rmse = None
+
+        if sales_data:
             try:
-                arima_forecast_data = arima_forecast(series, order=(1, 1, 1), steps=forecast_steps)
-            except Exception as e:
-                logging.error(f"ARIMA forecasting failed: {e}")
-                arima_forecast_data = [0] * forecast_steps
+                df = pd.DataFrame(sales_data, columns=['date', 'sales_amount'])
+                df['date'] = pd.to_datetime(df['date'])
+                df.set_index('date', inplace=True)
+                df = df.asfreq('D', fill_value=0)
+                series = pd.Series(df['sales_amount'].values, index=df.index)
 
-            # Forecast with Linear Regression
-            try:
-                lr_forecast_data, lr_mae, lr_rmse, lr_mape, lr_r2 = linear_regression_forecast(series, steps=forecast_steps)
-            except Exception as e:
-                logging.error(f"Linear Regression forecasting failed: {e}")
-                lr_forecast_data, lr_mae, lr_rmse, lr_mape, lr_r2 = [0] * forecast_steps, None, None, None, None
+                # Forecast with ARIMA
+                try:
+                    arima_forecast_data = arima_forecast(series, order=(1, 1, 1), steps=forecast_steps)
+                except Exception as e:
+                    logging.error(f"ARIMA forecasting failed: {e}")
+                    arima_forecast_data = [0] * forecast_steps
 
-            # Forecast with ETS
-            try:
-                ets_forecast_data, ets_mae, ets_rmse = ets_forecast(series, steps=forecast_steps)
-            except Exception as e:
-                logging.error(f"ETS forecasting failed: {e}")
-                ets_forecast_data, ets_mae, ets_rmse = [0] * forecast_steps, None, None
+                # Forecast with Linear Regression
+                try:
+                    lr_forecast_data, lr_mae, lr_rmse, lr_mape, lr_r2 = linear_regression_forecast(series, steps=forecast_steps)
+                except Exception as e:
+                    logging.error(f"Linear Regression forecasting failed: {e}")
+                    lr_forecast_data, lr_mae, lr_rmse, lr_mape, lr_r2 = [0] * forecast_steps, None, None, None, None
 
-        except Exception as e:
-            logging.error(f"Error processing sales data for forecasting: {e}")
+                # Forecast with ETS
+                try:
+                    ets_forecast_data, ets_mae, ets_rmse = ets_forecast(series, steps=forecast_steps)
+                except Exception as e:
+                    logging.error(f"ETS forecasting failed: {e}")
+                    ets_forecast_data, ets_mae, ets_rmse = [0] * forecast_steps, None, None
+
+            except Exception as e:
+                logging.error(f"Error processing sales data for forecasting: {e}")
+                arima_forecast_data = lr_forecast_data = ets_forecast_data = [0] * forecast_steps
+        else:
             arima_forecast_data = lr_forecast_data = ets_forecast_data = [0] * forecast_steps
-            arima_mae = arima_rmse = None
-            lr_mae = lr_rmse = lr_mape = lr_r2 = None
-            ets_mae = ets_rmse = None
+            arima_mae = arima_rmse = lr_mae = lr_rmse = lr_mape = lr_r2 = ets_mae = ets_rmse = None
+
+        # Cache the forecast results dictionary
+        forecast_results = {
+            'arima_forecast_data': arima_forecast_data,
+            'lr_forecast_data': lr_forecast_data,
+            'lr_mae': lr_mae,
+            'lr_rmse': lr_rmse,
+            'lr_mape': lr_mape,
+            'lr_r2': lr_r2,
+            'ets_forecast_data': ets_forecast_data,
+            'ets_mae': ets_mae,
+            'ets_rmse': ets_rmse
+        }
+        cache.set(cache_key, forecast_results)
     else:
-        arima_forecast_data = lr_forecast_data = ets_forecast_data = [0] * forecast_steps
-        arima_mae = arima_rmse = None
-        lr_mae = lr_rmse = lr_mape = lr_r2 = None
-        ets_mae = ets_rmse = None
+        # Load forecast results from cache
+        arima_forecast_data = forecast_results['arima_forecast_data']
+        lr_forecast_data = forecast_results['lr_forecast_data']
+        lr_mae = forecast_results['lr_mae']
+        lr_rmse = forecast_results['lr_rmse']
+        lr_mape = forecast_results['lr_mape']
+        lr_r2 = forecast_results['lr_r2']
+        ets_forecast_data = forecast_results['ets_forecast_data']
+        ets_mae = forecast_results['ets_mae']
+        ets_rmse = forecast_results['ets_rmse']
 
     # --- Demand Trend by Region Forecasting ---
-    forecast_steps = 4
     region_forecast_results = {}
 
     # Group sales data by region for forecast
