@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}" />
+
+    <style>
+        /* Your existing CSS styles remain unchanged */
+        /* General Reset */
+       /* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f7fafc;
+    display: flex;
+    height: 100vh;
+}
+
+/* Container Layout */
+.container {
+    display: flex;
+    width: 100%;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 250px;
+    background: linear-gradient(135deg, #2d3b2f 80%, #3c4a3d 100%);
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    position: fixed;
+    height: 100%;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.07);
+}
+
+/* Sidebar Logo */
+.sidebar .logo img {
+    width: 90px;
+    margin-bottom: 30px;
+}
+
+/* Sidebar Menu */
+.sidebar .menu {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar .menu li {
+    margin-bottom: 18px;
+}
+
+.sidebar .menu li a {
+    text-decoration: none;
+    color: white;
+    font-size: 17px;
+    display: block;
+    padding: 12px 0;
+    background-color: transparent;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.sidebar .menu li a:hover {
+    background-color: #4d5a4e;
+    color: #ffe082;
+}
+
+.sidebar .menu li a.active {
+    background-color: #ff5722;
+    font-weight: 500;
+}
+
+/* Main Content Styling */
+.main-content {
+    margin-left: 250px;
+    padding: 30px 30px 0 30px;
+    width: 100%;
+}
+
+/* Top Bar Styling */
+.top-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 25px;
+    padding-right: 10px;
+}
+
+.top-bar .top-bar-content {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.top-bar input {
+    padding: 10px 14px;
+    width: 240px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    font-size: 15px;
+    transition: border 0.2s;
+}
+
+.top-bar input:focus {
+    border: 1.5px solid #4d5a4e;
+    outline: none;
+}
+
+/* Icons Styling */
+.top-bar .icons {
+    display: flex;
+    gap: 18px;
+}
+
+.top-bar .notification-icon,
+.top-bar .profile-icon {
+    cursor: pointer;
+    font-size: 22px;
+    transition: color 0.2s;
+}
+
+.top-bar .notification-icon:hover,
+.top-bar .profile-icon:hover {
+    color: #4d5a4e;
+}
+
+/* Content Grid Styling */
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 28px;
+}
+
+/* Content Box Styling */
+.content-box {
+    background: #fff;
+    min-height: 180px;
+    border-radius: 14px;
+    padding: 28px 22px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #222;
+    box-shadow: 0 4px 24px 0 rgba(44, 62, 80, 0.07);
+    transition: box-shadow 0.2s;
+}
+
+.content-box:hover {
+    box-shadow: 0 8px 32px 0 rgba(44, 62, 80, 0.13);
+}
+
+.content-box h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+    color: #2d3b2f;
+}
+
+.content-box p {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #444;
+}
+
+.content-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.content-box ul li {
+    font-size: 1rem;
+    margin-bottom: 7px;
+    color: #333;
+    padding-left: 8px;
+    position: relative;
+}
+
+.content-box ul li:before {
+    content: '\2022';
+    color: #4d5a4e;
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+}
+
+.content-box ul li:empty:before,
+.content-box ul li:only-child:before {
+    content: '';
+}
+
+/* Media Query for Mobile Devices */
+@media (max-width: 900px) {
+    .main-content {
+        margin-left: 0;
+        padding: 18px 5px 0 5px;
+    }
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        box-shadow: none;
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .content-box {
+        padding: 16px 8px;
+    }
+
+    .top-bar input {
+        width: 120px;
+    }
+}
+/* Content Box Styling */
+.content-box {
+    background: #fff;
+    min-height: 180px;
+    border-radius: 14px;
+    padding: 28px 22px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #222;
+    box-shadow: 0 4px 24px 0 rgba(44, 62, 80, 0.07);
+    transition: box-shadow 0.2s;
+    margin-bottom: 2rem;
+}
+
+.content-box:hover {
+    box-shadow: 0 8px 32px 0 rgba(44, 62, 80, 0.13);
+}
+
+.content-box h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+    color: #2d3b2f;
+    text-align: center;
+}
+
+.content-box h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 20px;
+    color: #4d5a4e;
+    text-align: center;
+}
+
+/* Forecast List Styling */
+.content-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    font-size: 1rem;
+    margin-top: 10px;
+    color: #333;
+}
+
+.content-box ul li {
+    margin-bottom: 10px;
+    padding-left: 8px;
+    position: relative;
+}
+
+.content-box ul li:before {
+    content: '\2022';
+    color: #4d5a4e;
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+}
+
+/* Table Styling for Metrics */
+.content-box table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.content-box table th, .content-box table td {
+    text-align: left;
+    padding: 12px;
+    font-size: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.content-box table th {
+    font-weight: 600;
+    color: #2d3b2f;
+    background-color: #f7fafc;
+}
+
+.content-box table td {
+    font-weight: 500;
+    color: #444;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+    .content-box h3 {
+        font-size: 1.15rem;
+    }
+
+    .content-box h4 {
+        font-size: 1rem;
+    }
+
+    .content-box ul li {
+        font-size: 0.95rem;
+    }
+
+    .content-box table th, .content-box table td {
+        font-size: 0.95rem;
+        padding: 10px;
+    }
+}
+/* Content Box for Model Performance Metrics */
+.content-box {
+    background: #fff;
+    min-height: 180px;
+    border-radius: 14px;
+    padding: 28px 22px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #222;
+    box-shadow: 0 4px 24px 0 rgba(44, 62, 80, 0.07);
+    transition: box-shadow 0.2s;
+    margin-bottom: 2rem;
+}
+
+.content-box:hover {
+    box-shadow: 0 8px 32px 0 rgba(44, 62, 80, 0.13);
+}
+
+.content-box h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+    color: #2d3b2f;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Table Styling for Model Performance Metrics */
+.content-box table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.content-box table th, .content-box table td {
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 1rem;
+    color: #333;
+    border-bottom: 1px solid #ddd;
+}
+
+.content-box table th {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: 600;
+}
+
+.content-box table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.content-box table tr:hover {
+    background-color: #e2f0e2;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+    .content-box h4 {
+        font-size: 1rem;
+    }
+
+    .content-box table th, .content-box table td {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <img src="https://i.imgur.com/MgTJR0n.png" alt="GMC Logo" />
+            </div>
+            <!-- Replace menu links with Flask url_for -->
+            <ul class="menu">
+                <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('main.inventory') }}">Inventory</a></li>
+                <li><a href="#">User Management</a></li>
+                <li><a href="{{ url_for('main.sdg_zero_hunger') }}">SDG: Zero Hunger</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="top-bar-content">
+                    <input type="text" placeholder="Search..." />
+                    <div class="icons">
+                        <span class="notification-icon">🔔</span>
+                        <span class="profile-icon">👤</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeframe Filter -->
+            <form method="GET" action="{{ url_for('main.dashboard') }}">
+                <label for="timeframe">Select Timeframe:</label>
+                <select name="timeframe" id="timeframe" onchange="this.form.submit()">
+                    <option value="monthly" {% if timeframe == 'monthly' %}selected{% endif %}>Monthly</option>
+                    <option value="quarterly" {% if timeframe == 'quarterly' %}selected{% endif %}>Quarterly</option>
+                    <option value="yearly" {% if timeframe == 'yearly' %}selected{% endif %}>Yearly</option>
+                </select>
+            </form>
+
+            <!-- Add inside .main-content, above metrics grid -->
+<form method="GET" action="{{ url_for('main.dashboard') }}" id="filterForm">
+    <label for="regionFilter">Filter by Region:</label>
+    <select name="region" id="regionFilter" onchange="document.getElementById('filterForm').submit()">
+      <option value="">All Regions</option>
+      {% for region in regions %}
+      <option value="{{ region }}" {% if selected_region == region %}selected{% endif %}>{{ region }}</option>
+      {% endfor %}
+    </select>
+  
+    <label for="itemFilter">Filter by Item:</label>
+    <select name="item" id="itemFilter" onchange="document.getElementById('filterForm').submit()">
+      <option value="">All Items</option>
+      {% for item in items %}
+      <option value="{{ item }}" {% if selected_item == item %}selected{% endif %}>{{ item }}</option>
+      {% endfor %}
+    </select>
+  
+    <label for="searchBox">Search:</label>
+    <input type="text" id="searchBox" name="search" value="{{ search_text or '' }}" placeholder="Search..." />
+    <button type="submit">Apply</button>
+  </form>
+
+            <!-- Content Grid for Metrics -->
+            <div class="content-grid">
+                <div class="content-box">
+                    <h3>Total Stock</h3>
+                    <p>{{ total_stock }} kg</p>
+                </div>
+
+                <div class="content-box">
+                    <h3>Total Value of Inventory</h3>
+                    <p>${{ '%.2f' % total_value }}</p>
+                </div>
+
+                <div class="content-box">
+                    <h3>Stock Reorder Frequency</h3>
+                    <p>{{ stock_reorder_freq or 0 }} reorder hits</p>
+                </div>
+
+                <div class="content-box">
+                    <h3>Top Region Branches by Sale</h3>
+                    <ul>
+                        {% for region, total_sales in top_regions %}
+                        <li>{{ region }}: ${{ '%.2f' % total_sales }}</li>
+                        {% else %}
+                        <li>No sales data available</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Price Forecast ARIMA Data List -->
+                <div class="content-box">
+                    <h3>Price Forecast for Rice (ARIMA)</h3>
+                    <ul>
+                        {% for forecast in forecast_data_arima %}
+                        <li>${{ '%.2f' % forecast }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Charts -->
+                <div class="content-box" style="height: 300px;">
+                    <h3>Stock In vs Stock Out</h3>
+                    <canvas id="stockInOutChart"></canvas>
+                </div>
+
+                <div class="content-box" style="height: 300px;">
+                    <h3>Distribution Stock Usage</h3>
+                    <canvas id="distributionStockChart"></canvas>
+                </div>
+
+                <div class="content-box" style="height: 300px;">
+                    <h3>Historical Stock Levels Over Time</h3>
+                    <canvas id="historicalStockChart"></canvas>
+                </div>
+
+                <div class="content-box" style="height: 300px;">
+                    <h3>Top Region Branches by Sale</h3>
+                    <canvas id="topRegionSalesChart"></canvas>
+                </div>
+
+                <div class="content-box" style="height: 300px;">
+                    <h3>Price Forecast (ARIMA)</h3>
+                    <canvas id="priceForecastChart"></canvas>
+                </div>
+
+                <!-- Forecast Comparison Chart -->
+                <div class="content-box" style="height: 300px;">
+                  <h3>Forecast Comparison (ARIMA, Linear Regression, ETS)</h3>
+                  <canvas id="forecastComparisonChart"></canvas>
+                </div>
+
+                <!-- Model evaluation metrics -->
+                <div class="content-box">
+                    <h4>Model Performance Metrics</h4>
+                    <table style="width: 100%; border-collapse: collapse;">
+                      <thead>
+                        <tr>
+                          <th style="border-bottom: 1px solid #ccc; padding: 8px; text-align: left;">Model</th>
+                          <th style="border-bottom: 1px solid #ccc; padding: 8px; text-align: left;">MAE</th>
+                          <th style="border-bottom: 1px solid #ccc; padding: 8px; text-align: left;">RMSE</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td style="padding: 8px;">Linear Regression</td>
+                          <td style="padding: 8px;">{{ lr_mae }}</td>
+                          <td style="padding: 8px;">{{ lr_rmse }}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 8px;">ETS</td>
+                          <td style="padding: 8px;">{{ ets_mae }}</td>
+                          <td style="padding: 8px;">{{ ets_rmse }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="content-box" style="height: 300px;">
+                    <h3>Demand Trend by Region</h3>
+                    <canvas id="demandTrendRegionChart"></canvas>
+                  </div>
+                  <div class="content-box" style="height: 350px;">
+                    <h3>Demand Trend by Region with Forecast</h3>
+                    <canvas id="demandTrendRegionForecastChart"></canvas> <!-- changed ID -->
+                  </div>
+                  <div class="content-box" style="height: 300px;">
+                    <h3>Stock Reorder Frequency Trend</h3>
+                    <canvas id="reorderFrequencyChart"></canvas>
+                 </div>
+                 <div class="content-box" style="height: 300px;">
+                    <h3>Price Trend Over Time</h3>
+                    <canvas id="priceTrendChart"></canvas>
+                </div>
+                <div class="content-box">
+                    <h3>Stock Risk Analysis</h3>
+                    
+                    <h4>Shortage Risk</h4>
+                    <ul>
+                        {% for item in shortage_items %}
+                        <li>{{ item.item_name }} - Qty: {{ item.quantity }}, Reorder Level: {{ item.reorder_level }}</li>
+                      {% else %}
+                        <li>No shortage risk items</li>
+                      {% endfor %}
+                      
+                    </ul>
+                    
+                    <h4>Overstock Risk</h4>
+                    <ul>
+                        {% for item in overstock_items %}
+                        <li>{{ item.item_name }} - Qty: {{ item.quantity }}, Reorder Level: {{ item.reorder_level }}</li>
+                      {% else %}
+                        <li>No overstock risk items</li>
+                      {% endfor %}
+                      
+                    </ul>
+                  </div>
+                  <div class="content-box">
+                    <h3>Linear Regression Forecast</h3>
+<ul>
+    {% for forecast in forecast_data_lr %}
+    <li>${{ '%.2f' % forecast }}</li>
+    {% endfor %}
+</ul>
+
+<h4>Linear Regression Metrics</h4>
+<table>
+    <tr>       
+        <th>MAPE (%)</th>
+        <th>R²</th>
+    </tr>
+    <tr>       
+        <td>{{ lr_mape }}</td>
+        <td>{{ lr_r2 }}</td>
+    </tr>
+</table>
+
+                  </div>
+                  
+                  
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+      // Data from Flask backend
+      const stockIn = {{ stock_in|tojson }};
+      const stockOut = {{ stock_out|tojson }};
+      const distributionStockUsage = {{ distribution_stock_usage|tojson }};
+      const stockLevelsOverTime = {{ stock_levels_over_time|tojson }};
+      const topRegions = {{ top_regions|tojson }};
+      const forecastDataArima = {{ forecast_data_arima|tojson }};
+      const forecastDataLR = {{ forecast_data_lr|tojson }};
+      const forecastDataETS = {{ forecast_data_ets|tojson }};
+
+      // Stock In vs Stock Out Pie Chart
+      new Chart(document.getElementById('stockInOutChart'), {
+        type: 'pie',
+        data: {
+          labels: ['Stock In', 'Stock Out'],
+          datasets: [{
+            data: [stockIn, stockOut],
+            backgroundColor: ['#4CAF50', '#FFC107'],
+          }]
+        }
+      });
+
+      // Distribution Stock Usage Bar Chart
+      new Chart(document.getElementById('distributionStockChart'), {
+        type: 'bar',
+        data: {
+          labels: distributionStockUsage.map(item => item[0]),
+          datasets: [{
+            label: 'Stock Quantity',
+            data: distributionStockUsage.map(item => item[1]),
+            backgroundColor: '#2196f3'
+          }]
+        }
+      });
+
+      // Historical Stock Levels Over Time Line Chart
+      new Chart(document.getElementById('historicalStockChart'), {
+        type: 'line',
+        data: {
+          labels: stockLevelsOverTime.map(item => item[0]),
+          datasets: [{
+            label: 'Stock Levels',
+            data: stockLevelsOverTime.map(item => item[1]),
+            borderColor: '#9c27b0',
+            fill: false
+          }]
+        }
+      });
+
+      // Top Region Branches by Sale Bar Chart
+      new Chart(document.getElementById('topRegionSalesChart'), {
+        type: 'bar',
+        data: {
+          labels: topRegions.map(item => item[0]),
+          datasets: [{
+            label: 'Sales Amount',
+            data: topRegions.map(item => item[1]),
+            backgroundColor: '#ff5722'
+          }]
+        }
+      });
+
+      // Price Forecast Line Chart
+      new Chart(document.getElementById('priceForecastChart'), {
+        type: 'line',
+        data: {
+          labels: ['Month 1', 'Month 2', 'Month 3', 'Month 4'],
+          datasets: [{
+            label: 'Price Forecast (ARIMA)',
+            data: forecastDataArima,
+            borderColor: '#e91e63',
+            fill: false
+          }]
+        }
+      });
+
+      // Forecast Comparison Chart
+      new Chart(document.getElementById('forecastComparisonChart'), {
+        type: 'line',
+        data: {
+          labels: ['Period 1', 'Period 2', 'Period 3', 'Period 4'],
+          datasets: [
+            {
+              label: 'ARIMA Forecast',
+              data: forecastDataArima,
+              borderColor: 'rgba(255, 99, 132, 1)',
+              fill: false,
+            },
+            {
+              label: 'Linear Regression Forecast',
+              data: forecastDataLR,
+              borderColor: 'rgba(54, 162, 235, 1)',
+              fill: false,
+            },
+            {
+              label: 'ETS Forecast',
+              data: forecastDataETS,
+              borderColor: 'rgba(75, 192, 192, 1)',
+              fill: false,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: false }
+          }
+        }
+      });
+      const regionSalesTrends = {{ region_sales_trends|tojson }};
+const ctxDemandTrend = document.getElementById('demandTrendRegionChart').getContext('2d');
+
+const labels = [];
+const datasets = [];
+
+for (const [region, data] of Object.entries(regionSalesTrends)) {
+  // Extract periods and sales values for this region
+  const periods = data.map(item => item[0]);
+  const sales = data.map(item => item[1]);
+
+  // Set labels once (assuming all regions have same periods)
+  if (labels.length === 0) {
+    labels.push(...periods);
+  }
+
+  datasets.push({
+    label: region,
+    data: sales,
+    borderColor: '#' + Math.floor(Math.random()*16777215).toString(16), // random color
+    fill: false,
+    tension: 0.1,
+    pointRadius: 4,      // Show dots with radius 4
+    pointHoverRadius: 6, // Larger dots on hover
+});
+}
+
+new Chart(ctxDemandTrend, {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: datasets
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: { beginAtZero: false }
+    }
+  }
+});
+const regionForecastResults = {{ region_forecast_results | tojson }};
+
+const ctxDemandTrendForecast = document.getElementById('demandTrendRegionForecastChart').getContext('2d');
+
+const labelsForecast = [];
+const datasetsForecast = [];
+
+for (const [region, data] of Object.entries(regionForecastResults)) {
+  const histLen = data.historical.length;
+  const totalLen = histLen + data.forecast.length;
+  const periods = [...Array(totalLen).keys()].map(i => i + 1);
+
+  if (labelsForecast.length === 0) {
+    labelsForecast.push(...periods);
+  }
+
+  // Historical data line
+  datasetsForecast.push({
+    label: `${region} Historical`,
+    data: [...data.historical, ...Array(data.forecast.length).fill(null)],
+    borderColor: '#' + Math.floor(Math.random() * 16777215).toString(16),
+    fill: false,
+    tension: 0.1
+  });
+
+  // Forecast data line (dashed)
+  datasetsForecast.push({
+    label: `${region} Forecast`,
+    data: [...Array(histLen).fill(null), ...data.forecast],
+    borderColor: '#' + Math.floor(Math.random() * 16777215).toString(16),
+    borderDash: [5, 5],
+    fill: false,
+    tension: 0.1
+  });
+}
+
+new Chart(ctxDemandTrendForecast, {
+  type: 'line',
+  data: {
+    labels: labelsForecast,
+    datasets: datasetsForecast
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: { beginAtZero: false }
+    }
+  }
+});
+// Stock Reorder Frequency Trend Line Chart
+const reorderHitsOverTime = {{ reorder_hits_over_time|tojson }};
+
+new Chart(document.getElementById('reorderFrequencyChart'), {
+    type: 'line',
+    data: {
+        labels: reorderHitsOverTime.map(item => item[0]),
+        datasets: [{
+            label: 'Reorder Hits',
+            data: reorderHitsOverTime.map(item => item[1]),
+            borderColor: '#ff9800',
+            fill: false,
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+});
+const priceTrendData = {{ price_trend_data|tojson }};
+
+new Chart(document.getElementById('priceTrendChart'), {
+    type: 'line',
+    data: {
+        labels: priceTrendData.map(item => item[0]),
+        datasets: [{
+            label: 'Average Price',
+            data: priceTrendData.map(item => item[1]),
+            borderColor: '#ff9800',
+            fill: false
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: { beginAtZero: false }
+        }
+    }
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/inventory.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <img src="https://i.imgur.com/MgTJR0n.png" alt="GMC Logo">
+            </div>
+            <ul class="menu">
+                <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+                <a href="{{ url_for('main.inventory') }}">Inventory</a>
+
+                <li><a href="#">User Management</a></li>
+                <li><a href="#">SDG: Zero Hunger</a></li>
+            </ul>
+            
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="top-bar-content">
+                    <input type="text" placeholder="Search...">
+                    <div class="icons">
+                        <span class="notification-icon">🔔</span>
+                        <span class="profile-icon">👤</span>
+                    </div>
+                </div>
+            </div>
+
+             <div class="add-inventory">
+                <button class="add-btn" onclick="openCreateForm()">Add New Inventory</button>
+            </div>
+            <!-- Inventory Table -->
+            <div class="inventory-table">               
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Stock ID</th>
+                            <th>Item Name</th>
+                            <th>Quantity Available</th>
+                            <th>Unit Price</th>
+                            <th>Supplier</th>
+                            <th>Reorder Level</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td>001</td>
+                            <td>Premium Rice</td>
+                            <td>1500 kg</td>
+                            <td>$20</td>
+                            <td>Rice Corp</td>
+                            <td>500 kg</td>
+                            <td>   
+    <button class="edit-btn" onclick="editInventory(1)">Edit</button>
+    <button class="delete-btn" onclick="deleteInventory(1)">Delete</button>
+</td>
+
+                        </tr>
+                        <tr>
+                            <td>002</td>
+                            <td>Organic Rice</td>
+                            <td>1200 kg</td>
+                            <td>$25</td>
+                            <td>Green Fields</td>
+                            <td>400 kg</td>
+                            <td>                               
+                                <button class="edit-btn" onclick="editInventory(2)">Edit</button>
+                                <button class="delete-btn" onclick="deleteInventory(2)">Delete</button>
+                            </td>
+                        </tr>
+                        <!-- More rows can be added here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Update Inventory Form -->
+<div id="crud-form-container" class="crud-form-container">
+    <form id="crud-form">
+        <!-- Close button -->
+        <button type="button" class="close-btn" onclick="closeCreateForm()">×</button> <!-- Close button added -->
+
+        <label for="item-name">Item Name:</label>
+        <input type="text" id="item-name" name="item-name" required>
+        
+        <label for="quantity">Quantity Available:</label>
+        <input type="number" id="quantity" name="quantity" required>
+        
+        <label for="price">Unit Price:</label>
+        <input type="number" id="price" name="price" required>
+        
+        <label for="supplier">Supplier:</label>
+        <input type="text" id="supplier" name="supplier" required>
+        
+        <label for="reorder-level">Reorder Level:</label>
+        <input type="number" id="reorder-level" name="reorder-level" required>
+        
+        <button type="submit">Save</button>
+        <button type="button" onclick="closeCreateForm()">Cancel</button>
+    </form>
+</div>
+
+    <script src="C:\Users\Hellios\Desktop\rice_inventory_system\static\js\inventory.js"></script>
+</body>
+</html>
