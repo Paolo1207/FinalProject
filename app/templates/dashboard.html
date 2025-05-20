@@ -471,39 +471,40 @@ body {
                     </div>
                 </div>
             </div>
-
-            <!-- Timeframe Filter -->
-            <form method="GET" action="{{ url_for('main.dashboard') }}">
-                <label for="timeframe">Select Timeframe:</label>
-                <select name="timeframe" id="timeframe" onchange="this.form.submit()">
-                    <option value="monthly" {% if timeframe == 'monthly' %}selected{% endif %}>Monthly</option>
-                    <option value="quarterly" {% if timeframe == 'quarterly' %}selected{% endif %}>Quarterly</option>
-                    <option value="yearly" {% if timeframe == 'yearly' %}selected{% endif %}>Yearly</option>
-                </select>
-            </form>
+          
 
             <!-- Add inside .main-content, above metrics grid -->
-<form method="GET" action="{{ url_for('main.dashboard') }}" id="filterForm">
-    <label for="regionFilter">Filter by Region:</label>
-    <select name="region" id="regionFilter" onchange="document.getElementById('filterForm').submit()">
-      <option value="">All Regions</option>
-      {% for region in regions %}
-      <option value="{{ region }}" {% if selected_region == region %}selected{% endif %}>{{ region }}</option>
-      {% endfor %}
-    </select>
-  
-    <label for="itemFilter">Filter by Item:</label>
-    <select name="item" id="itemFilter" onchange="document.getElementById('filterForm').submit()">
-      <option value="">All Items</option>
-      {% for item in items %}
-      <option value="{{ item }}" {% if selected_item == item %}selected{% endif %}>{{ item }}</option>
-      {% endfor %}
-    </select>
-  
-    <label for="searchBox">Search:</label>
-    <input type="text" id="searchBox" name="search" value="{{ search_text or '' }}" placeholder="Search..." />
-    <button type="submit">Apply</button>
-  </form>
+            <form method="GET" action="{{ url_for('main.dashboard') }}" id="filterForm">
+
+              <label for="timeframe">Select Timeframe:</label>
+              <select name="timeframe" id="timeframe">
+                  <option value="monthly" {% if timeframe == 'monthly' %}selected{% endif %}>Monthly</option>
+                  <option value="quarterly" {% if timeframe == 'quarterly' %}selected{% endif %}>Quarterly</option>
+                  <option value="yearly" {% if timeframe == 'yearly' %}selected{% endif %}>Yearly</option>
+              </select>
+            
+              <label for="regionFilter">Filter by Region:</label>
+              <select name="region" id="regionFilter">
+                <option value="">All Regions</option>
+                {% for region in regions %}
+                <option value="{{ region }}" {% if selected_region == region %}selected{% endif %}>{{ region }}</option>
+                {% endfor %}
+              </select>
+            
+              <label for="itemFilter">Filter by Item:</label>
+              <select name="item" id="itemFilter">
+                <option value="">All Items</option>
+                {% for item in items %}
+                <option value="{{ item }}" {% if selected_item == item %}selected{% endif %}>{{ item }}</option>
+                {% endfor %}
+              </select>
+            
+              <label for="searchBox">Search:</label>
+              <input type="text" id="searchBox" name="search" value="{{ search_text or '' }}" placeholder="Search..." />
+            
+              <button type="submit">Apply</button>
+            </form>
+            
 
             <!-- Content Grid for Metrics -->
             <div class="content-grid">
