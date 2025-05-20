@@ -1,44 +1,50 @@
-from app import create_app, db
-from app.models import Sales, Inventory
+import sqlite3
 import random
 from datetime import datetime, timedelta
 
-app = create_app()  # your app factory function
+# Connect to your SQLite DB (adjust path as needed)
+conn = sqlite3.connect('instance/rice_inventory.db')
+cursor = conn.cursor()
 
-with app.app_context():
-    # Optional: clear tables (be cautious!)
-    # db.session.query(Sales).delete()
-    # db.session.query(Inventory).delete()
-    # db.session.commit()
+# --- Generate and insert inventory data ---
 
-    # Dummy data lists
-    items = ['Rice A', 'Rice B', 'Rice C', 'Rice D']
-    regions = ['Region 1', 'Region 2', 'Region 3', 'Region 4']
-    suppliers = ['Supplier X', 'Supplier Y', 'Supplier Z']  # added suppliers list
+# Inventory columns: id, item_name, quantity, price, supplier, reorder_level
 
-    # Insert dummy inventory (4 items)
-    for item in items:
-        inv = Inventory(
-            item_name=item,
-            quantity=random.randint(50, 500),
-            price=round(random.uniform(20, 50), 2),
-            supplier=random.choice(suppliers),  # supply a valid non-null value
-            reorder_level=100
-        )
-        db.session.add(inv)
-    db.session.commit()
+suppliers = ['Supplier A', 'Supplier B', 'Supplier C', 'Supplier D']
+items = [f'Rice Variant {i}' for i in range(1, 501)]  # 500 items total
 
-    # Insert dummy sales (100 records)
-    start_date = datetime.now() - timedelta(days=180)  # last 6 months
+for item in items:
+    quantity = random.randint(50, 500)
+    price = round(random.uniform(20.0, 50.0), 2)
+    supplier = random.choice(suppliers)
+    reorder_level = random.randint(20, 100)
+    
+    cursor.execute('''
+        INSERT INTO inventory (item_name, quantity, price, supplier, reorder_level)
+        VALUES (?, ?, ?, ?, ?)
+    ''', (item, quantity, price, supplier, reorder_level))
 
-    for _ in range(100):
-        sale = Sales(
-            sales_date=start_date + timedelta(days=random.randint(0, 180)),
-            region=random.choice(regions),
-            sales_amount=round(random.uniform(1000, 10000), 2)
-        )
-        db.session.add(sale)
+print("Inserted inventory dummy data.")
 
-    db.session.commit()
+# --- Generate and insert sales data ---
 
-    print("Inserted 100 dummy sales and some inventory records.")
+# Sales columns: id, sales_date, region, sales_amount, item_name
+regions = ['North', 'South', 'East', 'West', 'Central']
+
+start_date = datetime.now() - timedelta(days=365)  # 1 year ago
+num_sales_records = 1000
+
+for _ in range(num_sales_records):
+    sales_date = start_date + timedelta(days=random.randint(0, 365))
+    region = random.choice(regions)
+    sales_amount = round(random.uniform(1000, 10000), 2)
+    
+    cursor.execute('''
+        INSERT INTO sales (sales_date, region, sales_amount)
+        VALUES (?, ?, ?)
+    ''', (sales_date.strftime('%Y-%m-%d'), region, sales_amount))
+
+print("Inserted sales dummy data.")
+
+conn.commit()
+conn.close()

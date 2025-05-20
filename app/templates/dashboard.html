@@ -9,6 +9,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <style>
         /* Your existing CSS styles remain unchanged */
@@ -415,6 +416,33 @@ body {
     }
 }
 
+.content-box.stock-risk {
+    max-width: 100%;
+    padding: 1rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+  }
+  .stock-risk h4 {
+    margin-top: 1.5rem;
+  }
+  .stock-risk ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    list-style-type: none;
+    padding-left: 0;
+    max-height: 200px; /* adjust as needed */
+    overflow-y: auto;
+  }
+  .stock-risk ul li {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    flex: 1 0 30%; /* 3 items per row, shrink/grow as needed */
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+  }
+
     </style>
 </head>
 <body>
@@ -427,9 +455,7 @@ body {
             <!-- Replace menu links with Flask url_for -->
             <ul class="menu">
                 <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
-                <li><a href="{{ url_for('main.inventory') }}">Inventory</a></li>
-                <li><a href="#">User Management</a></li>
-                <li><a href="{{ url_for('main.sdg_zero_hunger') }}">SDG: Zero Hunger</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>        
             </ul>
         </div>
 
@@ -590,29 +616,27 @@ body {
                     <h3>Price Trend Over Time</h3>
                     <canvas id="priceTrendChart"></canvas>
                 </div>
-                <div class="content-box">
-                    <h3>Stock Risk Analysis</h3>
-                    
-                    <h4>Shortage Risk</h4>
-                    <ul>
-                        {% for item in shortage_items %}
-                        <li>{{ item.item_name }} - Qty: {{ item.quantity }}, Reorder Level: {{ item.reorder_level }}</li>
-                      {% else %}
-                        <li>No shortage risk items</li>
-                      {% endfor %}
-                      
-                    </ul>
-                    
-                    <h4>Overstock Risk</h4>
-                    <ul>
-                        {% for item in overstock_items %}
-                        <li>{{ item.item_name }} - Qty: {{ item.quantity }}, Reorder Level: {{ item.reorder_level }}</li>
-                      {% else %}
-                        <li>No overstock risk items</li>
-                      {% endfor %}
-                      
-                    </ul>
-                  </div>
+                <div class="content-box stock-risk">
+                  <h3>Stock Risk Analysis</h3>
+                
+                  <h4>Shortage Risk</h4>
+                  <ul>
+                    {% for item in shortage_items %}
+                      <li>{{ item.item_name }} - Qty: {{ item.quantity }}, Reorder Level: {{ item.reorder_level }}</li>
+                    {% else %}
+                      <li>No shortage risk items</li>
+                    {% endfor %}
+                  </ul>
+                
+                  <h4>Overstock Risk</h4>
+                  <ul>
+                    {% for item in overstock_items %}
+                      <li>{{ item.item_name }} - Qty: {{ item.quantity }}, Reorder Level: {{ item.reorder_level }}</li>
+                    {% else %}
+                      <li>No overstock risk items</li>
+                    {% endfor %}
+                  </ul>
+                </div>
                   <div class="content-box">
                     <h3>Linear Regression Forecast</h3>
 <ul>
@@ -643,8 +667,17 @@ body {
 
     <!-- Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
+       $(document).ready(function() {
+    $('#regionFilter, #itemFilter').select2({
+      placeholder: "Select an option",
+      allowClear: true,
+      width: 'resolve'  // keep original width
+    });
+  });
+      
       // Data from Flask backend
       const stockIn = {{ stock_in|tojson }};
       const stockOut = {{ stock_out|tojson }};
@@ -884,6 +917,20 @@ new Chart(document.getElementById('priceTrendChart'), {
             y: { beginAtZero: false }
         }
     }
+});
+
+document.querySelector('.toggle-password').addEventListener('click', function() {
+  const passwordInput = document.getElementById('password');
+  const icon = this.querySelector('i');
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    icon.classList.remove('fa-eye');
+    icon.classList.add('fa-eye-slash');
+  } else {
+    passwordInput.type = 'password';
+    icon.classList.remove('fa-eye-slash');
+    icon.classList.add('fa-eye');
+  }
 });
     </script>
 </body>
